@@ -7,28 +7,34 @@ import type { App } from 'api';
 
 const isLocalHost = (hostname: string) => hostname === 'localhost' || hostname === '127.0.0.1';
 
-const getDefaultApiUrl = () => {
+const envApiUrl =
+  typeof import.meta.env !== 'undefined' &&
+  typeof import.meta.env.PUBLIC_API_URL === 'string' &&
+  import.meta.env.PUBLIC_API_URL.length > 0
+    ? import.meta.env.PUBLIC_API_URL.replace(/\/$/, '')
+    : null;
+
+/**
+ * Eden Treaty prefixes `https://` when the base string has no `://`.
+ * A relative path like `/api` becomes `https://` + `/api` → parsed as host `api` (broken).
+ * Always pass an absolute URL (origin + path) or localhost.
+ */
+const getApiUrl = () => {
   if (typeof window === 'undefined') {
-    return 'http://localhost:3000';
+    return envApiUrl ?? 'http://localhost:3000';
+  }
+
+  if (envApiUrl) {
+    return envApiUrl;
   }
 
   if (isLocalHost(window.location.hostname)) {
     return 'http://localhost:3000';
   }
 
-  return '/api';
+  return `${window.location.origin}/api`;
 };
 
-const getApiUrl = () => {
-  if (typeof window === 'undefined') {
-    return 'http://localhost:3000';
-  }
-
-  return getDefaultApiUrl();
-};
-
-const API_URL = typeof window !== 'undefined'
-  ? getApiUrl()
-  : 'http://localhost:3000';
+const API_URL = getApiUrl();
 
 export const api = treaty<App>(API_URL);
