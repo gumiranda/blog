@@ -2,8 +2,8 @@ import { Elysia, t } from "elysia";
 
 // Shared types: same shape on server and client via Eden Treaty
 const loginBody = t.Object({
-  username: t.String({ minLength: 1 }),
-  password: t.String({ minLength: 1 }),
+  username: t.String(),
+  password: t.String(),
 });
 
 const userSchema = t.Object({
@@ -51,11 +51,3 @@ export const app = new Elysia()
   });
 
 export type App = typeof app;
-
-if (import.meta.main) {
-  const port = Number(Bun.env.PORT ?? 3000);
-
-  app.listen(port);
-
-  console.log(`API running at http://localhost:${app.server?.port ?? port}`);
-}
