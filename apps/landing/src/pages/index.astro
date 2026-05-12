@@ -119,15 +119,14 @@ const latestPost = (await getCollection('blog')).sort((a, b) => b.data.pubDate.g
           const { data, error } = await api.auth.login.post({ username, password });
 
           if (error) {
-            resultEl.textContent = `API error: ${JSON.stringify(error, null, 2)}`;
+            resultEl.textContent = 'Couldn’t reach the API. Locally, run `bun run dev:api` and try again.';
             resultEl.classList.add('text-error');
             return;
           }
-
           resultEl.classList.add('text-success');
           resultEl.innerHTML = `<span class="font-sans font-semibold">✓ Logged in</span>\n${JSON.stringify(data, null, 2)}`;
-        } catch (error) {
-          resultEl.textContent = `Couldn’t reach the API: ${error instanceof Error ? error.message : String(error)}`;
+        } catch (_e) {
+          resultEl.textContent = 'Couldn’t reach the API. Locally, run `bun run dev:api` and try again.';
           resultEl.classList.add('text-error');
         } finally {
           btn.removeAttribute('disabled');

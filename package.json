@@ -1,5 +1,6 @@
 {
   "name": "beta-stack",
+  "type": "module",
   "private": true,
   "workspaces": ["apps/*"],
   "scripts": {
