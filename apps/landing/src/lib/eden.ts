@@ -24,7 +24,7 @@ const getApiUrl = () => {
     return envApiUrl ?? 'http://localhost:3000';
   }
 
-  if (envApiUrl) {
+  if (envApiUrl && (isLocalHost(window.location.hostname) || !envApiUrl.includes('localhost'))) {
     return envApiUrl;
   }
 

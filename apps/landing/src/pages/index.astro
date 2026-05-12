@@ -98,6 +98,8 @@ const latestPost = (await getCollection('blog')).sort((a, b) => b.data.pubDate.g
   </div>
 
   <script>
+    import { api } from '../lib/eden';
+
     const usernameEl = document.getElementById('login-username') as HTMLInputElement;
     const passwordEl = document.getElementById('login-password') as HTMLInputElement;
     const btn = document.getElementById('login-btn');
@@ -114,25 +116,14 @@ const latestPost = (await getCollection('blog')).sort((a, b) => b.data.pubDate.g
         btn.textContent = 'Logging in…';
 
         try {
-          const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:3000/auth/login'
-            : '/api/auth/login';
+          const { data, error } = await api.auth.login.post({ username, password });
 
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-          });
-
-          const responseText = await response.text();
-
-          if (!response.ok) {
-            resultEl.textContent = `API error ${response.status}: ${responseText || response.statusText}`;
+          if (error) {
+            resultEl.textContent = `API error: ${JSON.stringify(error, null, 2)}`;
             resultEl.classList.add('text-error');
             return;
           }
 
-          const data = JSON.parse(responseText);
           resultEl.classList.add('text-success');
           resultEl.innerHTML = `<span class="font-sans font-semibold">✓ Logged in</span>\n${JSON.stringify(data, null, 2)}`;
         } catch (error) {
