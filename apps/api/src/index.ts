@@ -45,12 +45,17 @@ export const app = new Elysia()
     },
     { body: loginBody, response: userSchema }
   )
-  .get("/auth/me", ({ headers }) => {
+  .get("/auth/me", () => {
     // Demo: no real auth; could check Authorization header in real app
     return { message: "Use POST /auth/login to get a user. Eden Treaty shares these types with the frontend." };
-  })
-  .listen(3000);
+  });
 
 export type App = typeof app;
 
-console.log(`API running at http://localhost:${app.server?.port ?? 3000}`);
+if (import.meta.main) {
+  const port = Number(Bun.env.PORT ?? 3000);
+
+  app.listen(port);
+
+  console.log(`API running at http://localhost:${app.server?.port ?? port}`);
+}
